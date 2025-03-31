@@ -1,0 +1,86 @@
+version: '3'
+
+volumes:
+  db:
+  redis:
+
+networks:
+  backend:
+  frontend:
+
+services:
+  app:
+    image: webdevops/php-nginx:8.4
+    container_name: splash_app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - WEB_DOCUMENT_ROOT=/app/public
+      - "php.short_open_tag=On"
+      - "php.error_reporting=E_ALL & ~E_NOTICE & ~E_DEPRECATED"
+      - "php.openssl.cafile=/usr/lib/ssl/cert.pem"
+      - "php.openssl.capath=/usr/lib/ssl/"
+      - "php.curl.cainfo=/usr/lib/ssl/cert.pem"
+      # - "php.mbstring.func_overload=2"
+      # - "php.mbstring.internal_encoding=utf-8"
+      - PHP_DATE_TIMEZONE=Asia/Almaty
+      - PHP_MAX_EXECUTION_TIME=600
+    volumes:
+      - ./:/app
+      - ./docker/app/ssl:/usr/lib/ssl
+      # 2 files: server.crt, server.key
+      # - ./docker/app/ssl:/opt/docker/etc/nginx/ssl/
+    networks:
+      - backend
+      - frontend
+  db:
+    image: mariadb:lts
+    container_name: splash_db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - backend
+  redis:
+    build: ./docker/redis
+    container_name: splash_redis
+    volumes:
+      - redis:/data
+    networks:
+      - backend
+  redis-webui:
+    image: erikdubbelboer/phpredisadmin:latest
+    container_name: splash_redis-webui
+    environment:
+      - REDIS_1_HOST=redis
+      - REDIS_1_PORT=6379
+      - REDIS_1_AUTH=${REDIS_PASSWORD}
+    ports:
+      - "82:80"
+    depends_on:
+      - redis
+    networks:
+      - backend
+      - frontend
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: splash_phpmyadmin
+    ports:
+      - "81:80"
+    depends_on:
+      - db
+    environment:
+      - PMA_HOST=db
+      - PMA_ARBITRARY=1
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    networks:
+      - backend
