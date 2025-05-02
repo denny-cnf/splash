@@ -39,11 +39,12 @@
                             <option
                                 value="{{ $pt->price }}"
                                 data-name="{{ $pt->name }}">
-                                {{ $pt->name }} ({{ $pt->price }} тг)
+                                {{ $pt->name }} ({{ $pt->density }} г/м², {{ $pt->price }} тг)
                             </option>
                         @endforeach
                     </select>
                 </div>
+
 
                 <!-- Цветность-->
                 <div>

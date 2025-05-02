@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('paper_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->unsignedInteger('density'); // г/м²
             $table->integer('price');
             $table->timestamps();
         });

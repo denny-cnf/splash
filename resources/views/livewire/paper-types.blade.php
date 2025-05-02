@@ -9,7 +9,7 @@
         <div class="p-6 bg-gray-100 space-y-6 max-w-md mx-auto">
                 <div class="py-6 px-4 sm:px-6 lg:px-8">
                     <div class="flex flex-col">
-                        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                        <div class="-my-2 sm:-mx-6 lg:-mx-8">
                             <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                                 <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded">
                                     <table class="min-w-full divide-y divide-gray-200 w-full">
@@ -21,6 +21,11 @@
                                             <th scope="col"
                                                 class="px-2 py-3 bg-gray-50 text-left text-sm font-medium text-gray-800">
                                                 <div class="pl-4">{{ __('Наименование') }}</div>
+                                            </th>
+
+                                            <th scope="col"
+                                                class="px-2 py-3 bg-gray-50 text-left text-sm font-medium text-gray-800">
+                                                <div class="pl-4">{{ __('г/м²') }}</div>
                                             </th>
 
                                             <th scope="col"
