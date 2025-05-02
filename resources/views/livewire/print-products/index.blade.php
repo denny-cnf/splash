@@ -65,6 +65,18 @@
                     <span class="text-sm text-dark-700">ШТ.</span>
                 </div>
 
+                <!-- Отступы -->
+                <div class="flex justify-between space-x-4 mt-4">
+                    <div>
+                        <label class="text-sm">Отступ от края (мм)</label>
+                        <input type="number" x-model="margin" @input="calculate" class="w-24 border rounded px-2">
+                    </div>
+                    <div>
+                        <label class="text-sm">Между элементами (мм)</label>
+                        <input type="number" x-model="gap" @input="calculate" class="w-24 border rounded px-2">
+                    </div>
+                </div>
+
                 <!-- Кнопки -->
                 <div class="flex flex-wrap justify-center gap-3">
                     <button class="bg-[#0a0a0a] text-white px-4 py-2 rounded shadow">За 1 ед. - <span x-text="unitPrice"></span> тг.</button>
@@ -92,6 +104,8 @@
             paperName: '',
             colorPrice: 0,
             quantity: 1,
+            margin: 5,
+            gap: 2,
             unitPrice: 0,
             totalPrice: 0,
             customWidth: 0,
@@ -250,22 +264,29 @@
 
         if (!formatW || !formatH) return;
 
-        const scale = 1; // 1mm = 1px для макета
-        const bleed = 2; // Технологический отступ (2 мм)
+        const scale = 1; // 1mm = 1px
 
-        let fitX = Math.floor(sheetW / (formatW + 2 * bleed)); // Учитываем отступы
-        let fitY = Math.floor(sheetH / (formatH + 2 * bleed)); // Учитываем отступы
+        // Получаем отступы от Alpine-переменных
+        const root = Alpine.store('alpine:calculator') || {}; // резерв
+        const margin = parseFloat(document.querySelector('[x-model="margin"]')?.value || 0);
+        const gap = parseFloat(document.querySelector('[x-model="gap"]')?.value || 0);
 
+        const usableW = sheetW - 2 * margin;
+        const usableH = sheetH - 2 * margin;
+
+        let fitX = Math.floor((usableW + gap) / (formatW + gap));
+        let fitY = Math.floor((usableH + gap) / (formatH + gap));
         let count = fitX * fitY;
 
-        // Попробуем повернуть формат если больше влезет
-        const fitXAlt = Math.floor(sheetW / (formatH + 2 * bleed));
-        const fitYAlt = Math.floor(sheetH / (formatW + 2 * bleed));
-        const altCount = fitXAlt * fitYAlt;
+        const altFitX = Math.floor((usableW + gap) / (formatH + gap));
+        const altFitY = Math.floor((usableH + gap) / (formatW + gap));
+        const altCount = altFitX * altFitY;
 
+        let rotated = false;
         if (altCount > count) {
-            [fitX, fitY] = [fitXAlt, fitYAlt];
+            [fitX, fitY] = [altFitX, altFitY];
             [formatW, formatH] = [formatH, formatW];
+            rotated = true;
             count = altCount;
         }
 
@@ -277,8 +298,8 @@
                 block.style.width = formatW * scale + 'px';
                 block.style.height = formatH * scale + 'px';
                 block.style.position = 'absolute';
-                block.style.left = (x * (formatW + 2 * bleed) * scale + bleed * scale) + 'px';
-                block.style.top = (y * (formatH + 2 * bleed) * scale + bleed * scale) + 'px';
+                block.style.left = (margin + x * (formatW + gap)) + 'px';
+                block.style.top = (margin + y * (formatH + gap)) + 'px';
                 block.style.border = '1px solid #000';
                 block.style.boxSizing = 'border-box';
                 block.style.backgroundColor = 'rgba(255,255,255,0.6)';
