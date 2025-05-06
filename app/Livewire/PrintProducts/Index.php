@@ -11,7 +11,7 @@ class Index extends Component
 {
     public function render()
     {
-        $paperType = PaperType::get();
+        $paperType = PaperType::all();
         $paperFormat = PaperFormats::get();
         $colorModes = ColorModes::get();
         return view('livewire.print-products.index', ['paperType' => $paperType, 'paperFormat' => $paperFormat, 'colorModes' => $colorModes]);
