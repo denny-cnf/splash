@@ -65,10 +65,6 @@
                         </div>
                     </div>
 
-
-
-
-
                     <div class="flex flex-wrap md:flex-nowrap gap-4 items-end">
                     <!-- Категория бумаги -->
                     <div class="w-full md:w-1/2">
@@ -87,8 +83,11 @@
                         <label class="block text-sm font-medium text-gray-700">Плотность</label>
                         <select x-model="selectedType" @change="updatePaper"
                                 class="mt-1 w-full border rounded-md shadow-sm">
-                            <template x-for="type in filteredDensities" :key="type.id">
-                                <option :value="type.price" x-text="type.density + ' г/м² (' + type.price + ' тг)'"></option>
+                            <template x-for="(type, index) in filteredDensities" :key="type.id">
+                                <option :value="type.price"
+                                        :selected="selectedType == type.price"
+                                        x-text="type.density + ' г/м² (' + type.price + ' тг)'">
+                                </option>
                             </template>
                         </select>
                     </div>
@@ -111,24 +110,28 @@
 
                 </div>
                 <!--Правый блок-->
-                <div class="mt-6 border border-gray-400 p-4 bg-white w-[360px]">
+                <div class="border border-gray-400 p-4 bg-white dark:bg-gray-800 dark:text-gray-200 w-[360px]">
                     <h3 class="font-semibold text-center mb-2">Размещение на листе 320×450 мм</h3>
                     <div class="relative w-[320px] h-[450px] bg-gray-200 mx-auto" id="sheet-container">
                         <!-- Блоки размещения будут отрисованы JavaScript -->
                     </div>
-                    <div class="flex justify-center space-x-6 mt-4">
+                    <div class="flex flex-col justify-center mt-2">
 {{--                        <div>--}}
 {{--                            <label class="block text-sm font-medium text-gray-700 text-center">Отступ от края (мм)</label>--}}
 {{--                            <input type="number" x-model="margin" @input="calculate"--}}
 {{--                                   class="w-24 border rounded px-2 py-1 text-center shadow-sm">--}}
 {{--                        </div>--}}
+
+
+                        <div class="text-center text-sm mt-2">Форматов на листе: <span id="fit-count">0</span></div>
+
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 text-center">Между элементами (мм)</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 text-center">Между элементами (мм)</label>
                             <input type="number" x-model="gap" @input="calculate"
-                                   class="w-24 border rounded px-2 py-1 text-center shadow-sm">
+                                   class="w-full border rounded px-2 py-1 text-center shadow-sm dark:text-gray-600">
                         </div>
                     </div>
-                    <p class="text-center text-sm mt-2">Форматов на листе: <span id="fit-count">0</span></p>
+
                 </div>
             </div>
         </div>
@@ -166,17 +169,60 @@
 
             toggleColor(side, index) {
                 const color = this[side][index];
+                const colorKeys = ['C', 'M', 'Y'];
+
+                // Запретить выключение K на лицевой стороне
+                if (side === 'front' && color.name === 'K') {
+                    return;
+                }
 
                 if (color.name === 'K') {
-                    color.selected = !color.selected;
+                    const kSelected = color.selected;
+                    const anyColorOn = this[side].some(c => colorKeys.includes(c.name) && c.selected);
+
+                    if (kSelected && anyColorOn) {
+                        // Если K выключается при активных CMY — сбросить всё
+                        this[side] = this[side].map(c => ({ ...c, selected: false }));
+
+                        // Если это front — сразу вернуть K
+                        if (side === 'front') {
+                            this[side] = this[side].map(c =>
+                                c.name === 'K'
+                                    ? { ...c, selected: true }
+                                    : c
+                            );
+                        }
+                    } else {
+                        // Тоглим K
+                        color.selected = !color.selected;
+                    }
                 } else {
-                    const colorKeys = ['C', 'M', 'Y'];
-                    const allOn = this[side].filter(c => colorKeys.includes(c.name)).every(c => c.selected);
-                    this[side] = this[side].map(c =>
-                        colorKeys.includes(c.name)
-                            ? { ...c, selected: !allOn }
-                            : c
-                    );
+                    const anyColorOn = this[side].some(c => colorKeys.includes(c.name) && c.selected);
+
+                    if (!anyColorOn) {
+                        // Включаем CMY
+                        this[side] = this[side].map(c =>
+                            colorKeys.includes(c.name)
+                                ? { ...c, selected: true }
+                                : c
+                        );
+
+                        // Если K не включен — включаем его автоматически
+                        if (!this[side].find(c => c.name === 'K')?.selected) {
+                            this[side] = this[side].map(c =>
+                                c.name === 'K'
+                                    ? { ...c, selected: true }
+                                    : c
+                            );
+                        }
+                    } else {
+                        // Выключаем только CMY
+                        this[side] = this[side].map(c =>
+                            colorKeys.includes(c.name)
+                                ? { ...c, selected: false }
+                                : c
+                        );
+                    }
                 }
 
                 this.calculate();
@@ -221,8 +267,15 @@
                 this.filteredDensities = this.paperTypes.filter(p =>
                     p.name === this.selectedName
                 );
-                this.selectedType = 0;
-                this.calculate();
+
+                if (this.filteredDensities.length > 0) {
+                    this.selectedType = this.filteredDensities[0].price;
+                    this.updatePaper();
+                } else {
+                    this.selectedType = 0;
+                    this.typePrice = 0;
+                    this.calculate();
+                }
             },
 
             updatePaper() {
