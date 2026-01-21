@@ -6,7 +6,7 @@
             </h2>
         </x-slot>
 
-        <div class="p-6 bg-gray-100 space-y-6 max-w-md mx-auto">
+        <div class="p-6 bg-gray-100 space-y-6 min-w-[900px] mx-auto">
                 <div class="py-6 px-4 sm:px-6 lg:px-8">
                     <div class="flex flex-col">
                         <div class="-my-2 sm:-mx-6 lg:-mx-8">
@@ -49,6 +49,10 @@
 
                                                     <td class="px-6 py-1.5 text-sm text-gray-900">
                                                         {{ $type->name }}
+                                                    </td>
+
+                                                    <td class="px-6 py-1.5 text-sm text-gray-900">
+                                                        {{ $type->density }}
                                                     </td>
 
                                                     <td class="px-6 py-1.5 text-sm text-gray-900">

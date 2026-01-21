@@ -6,7 +6,7 @@
             </h2>
         </x-slot>
 
-        <div class="p-6 bg-gray-100 space-y-6 max-w-md mx-auto">
+        <div class="p-6 bg-gray-100 space-y-6 mx-auto">
                 <div class="py-6 px-4 sm:px-6 lg:px-8">
                     <div class="flex flex-col">
                         <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
