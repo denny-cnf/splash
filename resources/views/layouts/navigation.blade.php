@@ -12,9 +12,9 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex items-center">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Главная страница') }}
-                    </x-nav-link>
+{{--                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">--}}
+{{--                        {{ __('Главная страница') }}--}}
+{{--                    </x-nav-link>--}}
 
                     <x-nav-link :href="route('print-products')" :active="request()->routeIs('print-products')">
                         {{ __('Печатная продукция') }}
@@ -23,8 +23,8 @@
                     {{-- Справочники --}}
                     <div x-data="{ openRef: false }" class="relative">
                         <button @click="openRef = !openRef" type="button"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white focus:outline-none">
-                            📚 Справочники
+                                class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-700 focus:outline-none focus:text-gray-700 dark:focus:text-gray-300 focus:border-gray-300 dark:focus:border-gray-700 transition duration-150 ease-in-out">
+                            Справочники
                             <svg class="ml-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06-.02L10 10.586l3.71-3.4a.75.75 0 111.02 1.1l-4 3.66a.75.75 0 01-1.02 0l-4-3.66a.75.75 0 01-.02-1.06z" clip-rule="evenodd"/>
                             </svg>
@@ -36,11 +36,15 @@
                             <div class="py-1">
                                 <a href="{{ route('paper-formats.index') }}"
                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
-                                    📐 Форматы бумаги
+                                    Форматы бумаги
                                 </a>
                                 <a href="{{ route('paper-type.index') }}"
                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
-                                    📄 Типы бумаги
+                                    Типы бумаги
+                                </a>
+                                <a href="{{ route('color-modes.index') }}"
+                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                    Цветность
                                 </a>
                             </div>
                         </div>
@@ -103,6 +107,18 @@
 
             <x-responsive-nav-link :href="route('print-products')" :active="request()->routeIs('print-products')">
                 {{ __('Печатная продукция') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('paper-formats.index')" :active="request()->routeIs('paper-formats.index')">
+                {{ __('Форматы бумаги') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('paper-type.index')" :active="request()->routeIs('paper-type.index')">
+                {{ __('Типы бумаги') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('color-modes.index')" :active="request()->routeIs('color-modes.index')">
+                {{ __('Цветность') }}
             </x-responsive-nav-link>
 
         </div>

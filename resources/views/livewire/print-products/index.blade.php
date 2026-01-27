@@ -74,11 +74,11 @@
                             </label>
                             <label class="flex items-center space-x-1">
                                 <input type="radio" x-model="coverage" value="medium" @change="calculate">
-                                <span>Средняя (+30%)</span>
+                                <span>Средняя</span>
                             </label>
                             <label class="flex items-center space-x-1">
                                 <input type="radio" x-model="coverage" value="full" @change="calculate">
-                                <span>Полная (+60%)</span>
+                                <span>Полная</span>
                             </label>
                         </div>
                     </div>

@@ -19,6 +19,8 @@ Route::get('/print-products', [App\Livewire\PrintProducts\Index::class, 'render'
 
 Route::get('/paper-formats', [App\Livewire\PaperFormats\Index::class, 'render'])->middleware(['auth', 'verified'])->name('paper-formats.index');
 Route::get('/paper-type', [App\Livewire\PaperType\Index::class, 'render'])->middleware(['auth', 'verified'])->name('paper-type.index');
+Route::get('/color-modes', [App\Livewire\ColorModes\Index::class, 'render'])->middleware(['auth', 'verified'])->name('color-modes.index');
+
 
 
 
