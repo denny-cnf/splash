@@ -30,7 +30,17 @@
 
                                             <th scope="col"
                                                 class="px-2 py-3 bg-gray-50 text-left text-sm font-medium text-gray-800">
-                                                <div class="pl-4">{{ __('Цена') }}</div>
+                                                <div class="pl-4">{{ __('Толщина') }}</div>
+                                            </th>
+
+                                            <th scope="col"
+                                                class="px-2 py-3 bg-gray-50 text-left text-sm font-medium text-gray-800">
+                                                <div class="pl-4">{{ __('Цена за упаковку') }}</div>
+                                            </th>
+
+                                            <th scope="col"
+                                                class="px-2 py-3 bg-gray-50 text-left text-sm font-medium text-gray-800">
+                                                <div class="pl-4">{{ __('Цена за лист') }}</div>
                                             </th>
 
                                             <th scope="col" width="200"
@@ -56,7 +66,15 @@
                                                     </td>
 
                                                     <td class="px-6 py-1.5 text-sm text-gray-900">
+                                                        {{ $type->thickness }}
+                                                    </td>
+
+                                                    <td class="px-6 py-1.5 text-sm text-gray-900">
                                                         {{ $type->price }}
+                                                    </td>
+
+                                                    <td class="px-6 py-1.5 text-sm text-gray-900">
+                                                        {{ $type->price / $type->sheets }}
                                                     </td>
 
                                                     <td class="px-6 py-1.5 whitespace-nowrap text-sm font-medium space-x-2 text-right">
