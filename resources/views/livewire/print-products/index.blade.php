@@ -84,32 +84,47 @@
                     </div>
 
                     <div class="flex flex-wrap md:flex-nowrap gap-4 items-end">
-                    <!-- Категория бумаги -->
-                    <div class="w-full md:w-1/2">
-                        <label class="block text-sm font-medium text-gray-700">Тип бумаги</label>
-                        <select x-model="selectedName" @change="filterDensities"
-                                class="mt-1 w-full border rounded-md shadow-sm">
-                            <option value="">Выберите вид бумаги</option>
-                            @foreach($paperType->pluck('name')->unique() as $name)
-                                <option value="{{ $name }}">{{ $name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                        <!-- Категория бумаги -->
+                        <div class="w-full md:w-1/2">
+                            <label class="block text-sm font-medium text-gray-700">Тип бумаги</label>
+                            <select x-model="selectedName" @change="filterDensities"
+                                    class="mt-1 w-full border rounded-md shadow-sm">
+                                <option value="">Выберите вид бумаги</option>
+                                @foreach($paperType->pluck('name')->unique() as $name)
+                                    <option value="{{ $name }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                    <!-- Плотность бумаги -->
-                    <div class="w-full md:w-1/2">
-                        <label class="block text-sm font-medium text-gray-700">Плотность</label>
-                        <select x-model="selectedType" @change="updatePaper"
-                                class="mt-1 w-full border rounded-md shadow-sm">
-                            <template x-for="(type, index) in filteredDensities" :key="type.id">
-                                <option :value="type.price"
-                                        :selected="selectedType == type.price"
-                                        x-text="type.density + ' г/м² (' + type.price + ' тг)'">
-                                </option>
-                            </template>
-                        </select>
+                        <!-- Плотность бумаги -->
+                        <div class="w-full md:w-1/2">
+                            <label class="block text-sm font-medium text-gray-700">Плотность</label>
+                            <select x-model="selectedType" @change="updatePaper"
+                                    class="mt-1 w-full border rounded-md shadow-sm">
+                                <template x-for="type in filteredDensities" :key="type.id">
+                                    <option :value="type.id"
+                                            x-text="type.density + ' г/м²'">
+                                    </option>
+                                </template>
+                            </select>
+                        </div>
+
+                        <!-- Множитель бумаги -->
+                        <div class=" hidden w-full md:w-1/2">
+                            <label class="block text-sm font-medium text-gray-700">
+                                Множитель бумаги
+                            </label>
+
+                            <input type="number"
+                                   step="0.1"
+                                   min="0"
+                                   x-model="paperMultiplier"
+                                   @input="updatePaper"
+                                   class="mt-1 w-full border rounded-md shadow-sm px-2 py-1"
+                                   placeholder="Напр. 2">
+                        </div>
+
                     </div>
-                </div>
 
                     <button @click="showServices = !showServices" class="w-full bg-gray-100 px-4 py-2 rounded-md border text-left hover:bg-gray-200">
                         Добавить услугу +
@@ -175,6 +190,7 @@
             formatPrice: 0,
             typePrice: 0,
             paperName: '',
+            paperMultiplier: 2, // множитель стоимости бумаги
             colorPrice: 0,
             coverage: 'none', // 'none', 'medium', 'full'
             quantity: 1,
@@ -293,6 +309,7 @@
                     'name' => $pt->name,
                     'density' => $pt->density,
                     'price' => $pt->price,
+                    'sheets' => $pt->sheets,
                 ];
             })->values()) !!},
 
@@ -306,7 +323,7 @@
                 );
 
                 if (this.filteredDensities.length > 0) {
-                    this.selectedType = this.filteredDensities[0].price;
+                    this.selectedType = this.filteredDensities[0].id;
                     this.updatePaper();
                 } else {
                     this.selectedType = 0;
@@ -316,9 +333,17 @@
             },
 
             updatePaper() {
-                const selected = this.paperTypes.find(p => p.price == this.selectedType);
-                this.paperName = selected?.name + ' ' + selected?.density + ' г/м²' || '';
-                this.typePrice = parseFloat(this.selectedType) || 0;
+                const selected = this.paperTypes.find(p => p.id == this.selectedType);
+
+                this.paperName = selected
+                    ? `${selected.name} ${selected.density} г/м²`
+                    : '';
+
+                const price = parseFloat(selected?.price) || 0;
+                const sheets = parseFloat(selected?.sheets) || 1;
+                let basePaperPrice = sheets > 0 ? (price / sheets) : 0;
+                this.typePrice = basePaperPrice * this.paperMultiplier;
+
                 this.calculate();
             },
 
@@ -333,8 +358,8 @@
                 let color = this.getColorPrice();
 
                 let multiplier = 1;
-                if (this.coverage === 'medium') multiplier = 1.3;
-                if (this.coverage === 'full') multiplier = 1.6;
+                if (this.coverage === 'medium') multiplier = 1.25; // +25%
+                if (this.coverage === 'full') multiplier = 1.5;    // +50%
                 color = Math.round(color * multiplier);
                 this.colorPrice = color;
 
