@@ -36,15 +36,23 @@
                             <div class="py-1">
                                 <a href="{{ route('paper-formats.index') }}"
                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
-                                    Форматы бумаги
+                                    Формат бумаги
                                 </a>
                                 <a href="{{ route('paper-type.index') }}"
                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
-                                    Типы бумаги
+                                    Тип бумаги
                                 </a>
                                 <a href="{{ route('color-modes.index') }}"
                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
                                     Цветность
+                                </a>
+                                <a href="{{ route('machines.index') }}"
+                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                    Оборудование
+                                </a>
+                                <a href="{{ route('consumables.index') }}"
+                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                    Расходники
                                 </a>
                             </div>
                         </div>
