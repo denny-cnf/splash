@@ -355,13 +355,12 @@
             calculate() {
                 const format = parseFloat(this.formatPrice) || 0;
                 const type = parseFloat(this.typePrice) || 0;
-                let color = this.getColorPrice();
+                //let color = this.getColorPrice();
+                let color = 0;
 
                 let multiplier = 1;
-                if (this.coverage === 'medium') multiplier = 1.25; // +25%
-                if (this.coverage === 'full') multiplier = 1.5;    // +50%
                 color = Math.round(color * multiplier);
-                this.colorPrice = color;
+                //this.colorPrice = color;
 
                 const qty = parseInt(this.quantity) || 1;
 
@@ -396,7 +395,11 @@
                 const sheetPrice = format + type + color;
                 const sheetsNeeded = Math.ceil(qty / fitPerSheet);
 
-                const rawTotalPrice = sheetPrice * sheetsNeeded + this.getExtrasPrice() * qty;
+                const baseTotal = sheetPrice * sheetsNeeded + this.getExtrasPrice() * qty;
+
+                if (this.coverage === 'medium') multiplier = 1.25;
+                if (this.coverage === 'full') multiplier = 1.5;
+                const rawTotalPrice = Math.round(baseTotal * multiplier);
                 const rawUnitPrice = rawTotalPrice / qty;
 
                 this.totalPrice = rawTotalPrice;
@@ -446,8 +449,8 @@
                 }
 
                 let coverageLabel = 'Обычная';
-                if (this.coverage === 'medium') coverageLabel = 'Средняя (+30%)';
-                if (this.coverage === 'full') coverageLabel = 'Полная (+60%)';
+                if (this.coverage === 'medium') coverageLabel = 'Средняя';
+                if (this.coverage === 'full') coverageLabel = 'Полная';
 
                 const sheetW = 320, sheetH = 450;
                 const margin = parseFloat(this.margin);
