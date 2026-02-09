@@ -29,7 +29,7 @@
                                     class="mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-500">
                                 <option value="0">Выберите формат</option>
                                 @foreach($paperFormat as $pf)
-                                    <option value="{{ $pf->price }}" data-width="{{ $pf->width }}" data-height="{{ $pf->height }}">
+                                    <option value="{{ $pf->id }}" data-width="{{ $pf->width }}" data-height="{{ $pf->height }}">
                                         {{ $pf->name }}
                                     </option>
                                 @endforeach
@@ -226,6 +226,13 @@
                     medium: 1.25,
                     full: 1.5,
                 },
+                // Тираж коэффиценты
+                TIRAGE_MULTIPLIERS: [
+                    { from: 1,   to: 49,  k: 1.2 },
+                    { from: 50,  to: 99,  k: 1.0 },
+                    { from: 100, to: 299, k: 0.9 },
+                    { from: 300, to: Infinity, k: 0.8 },
+                ],
 
                 // доп услуги
                 EXTRA_PRICE_PER_UNIT: 5,
@@ -293,6 +300,16 @@
             getExtrasPrice() {
                 const p = this.CFG.EXTRA_PRICE_PER_UNIT;
                 return (this.bigovka + this.perforation) * p + (this.roundCorners ? p : 0) + (this.numeration ? p : 0);
+            },
+
+            // Получить множитель тиража
+            getTirageMultiplier(qty) {
+                for (const row of this.CFG.TIRAGE_MULTIPLIERS) {
+                    if (qty >= row.from && qty <= row.to) {
+                        return row.k;
+                    }
+                }
+                return 1;
             },
 
             // =========================
@@ -410,26 +427,40 @@
                 this.colorRate = colorBase * this.CFG.COLOR_RATE_MULT;
             },
 
-            getSidesCount() {
-                const pm = this.getPrintMode(); // "4+0", "4+4"
-                const [, back] = pm.split("+").map(v => parseInt(v, 10) || 0);
-                return back > 0 ? 2 : 1;
+            getSidesByType() {
+                const sideType = (side) => {
+                    const k = side.find(c => c.name === 'K')?.selected ?? false;
+                    const cmy = side.some(c => ['C','M','Y'].includes(c.name) && c.selected);
+                    if (cmy) return "color";
+                    if (k) return "bw";
+                    return "none";
+                };
+
+                const frontType = sideType(this.front);
+                const backType  = sideType(this.back);
+
+                const bwSides = (frontType === "bw" ? 1 : 0) + (backType === "bw" ? 1 : 0);
+                const colorSides = (frontType === "color" ? 1 : 0) + (backType === "color" ? 1 : 0);
+
+                return { bwSides, colorSides };
             },
 
             getFinalBwPrice() {
-                const sides = this.getSidesCount();
-                return this.roundUp(this.bwRate * sides, this.CFG.ROUND_BW_TO);
+                const { bwSides } = this.getSidesByType();
+                if (bwSides === 0) return 0;
+                const total = this.bwRate * 2 * bwSides;
+                return this.roundUp(total, this.CFG.ROUND_BW_TO);
             },
 
             getFinalColorPrice() {
-                const sides = this.getSidesCount();
-                return this.roundUp(this.colorRate * sides, this.CFG.ROUND_COLOR_TO);
+                const { colorSides } = this.getSidesByType();
+                if (colorSides === 0) return 0;
+                const total = this.colorRate * 2 * colorSides;
+                return this.roundUp(total, this.CFG.ROUND_COLOR_TO);
             },
 
             getFinalMachinePricePerItem() {
-                const [front] = this.getPrintMode().split("+").map(v => parseInt(v, 10) || 0);
-                const isColor = front > 1;
-                return isColor ? this.getFinalColorPrice() : this.getFinalBwPrice();
+                return this.getFinalBwPrice() + this.getFinalColorPrice();
             },
 
             // =========================
@@ -528,9 +559,11 @@
                     machineTotal +
                     (this.getExtrasPrice() * qty);
 
-                const multiplier = this.CFG.COVERAGE_MULTIPLIERS[this.coverage] ?? 1;
+                const tirageMultiplier = this.getTirageMultiplier(qty);
+                const totalWithTirage = baseTotal * tirageMultiplier;
 
-                const rawTotalPrice = Math.round(baseTotal * multiplier);
+                const coverageMultiplier = this.CFG.COVERAGE_MULTIPLIERS[this.coverage] ?? 1;
+                const rawTotalPrice = Math.round(totalWithTirage * coverageMultiplier);
                 const rawUnitPrice  = rawTotalPrice / qty;
 
                 this.totalPrice = rawTotalPrice;
