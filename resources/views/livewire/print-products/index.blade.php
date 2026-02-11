@@ -77,24 +77,6 @@
                         </div>
                     </div>
 
-                    <div class="mt-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Заливка</label>
-                        <div class="flex items-center gap-4 text-sm">
-                            <label class="flex items-center space-x-1">
-                                <input type="radio" x-model="coverage" value="none" @change="calculate">
-                                <span>Обычная</span>
-                            </label>
-                            <label class="flex items-center space-x-1">
-                                <input type="radio" x-model="coverage" value="medium" @change="calculate">
-                                <span>Средняя</span>
-                            </label>
-                            <label class="flex items-center space-x-1">
-                                <input type="radio" x-model="coverage" value="full" @change="calculate">
-                                <span>Полная</span>
-                            </label>
-                        </div>
-                    </div>
-
                     <div class="flex flex-wrap md:flex-nowrap gap-4 items-end">
                         <!-- Категория бумаги -->
                         <div class="w-full md:w-1/2">
@@ -135,31 +117,48 @@
                                    class="mt-1 w-full border rounded-md shadow-sm px-2 py-1"
                                    placeholder="Напр. 2">
                         </div>
-
                     </div>
 
-                    <button @click="showServices = !showServices" class="w-full bg-gray-100 px-4 py-2 rounded-md border text-left hover:bg-gray-200">
-                        Добавить услугу +
-                    </button>
-                    <div x-show="showServices" class="p-4 bg-white border rounded-md space-y-4 mt-2">
-                        <div class="flex justify-between items-center">
-                            <label>Биговка (1 биг = +5 тг):</label>
-                            <input type="number" min="0" class="w-24 border rounded px-2 py-1" x-model.number="bigovka">
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <label>Перфорация (1 линия = +5 тг):</label>
-                            <input type="number" min="0" class="w-24 border rounded px-2 py-1" x-model.number="perforation">
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <label>Скругление углов (+5 тг):</label>
-                            <input type="checkbox" x-model="roundCorners">
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <label>Нумерация (+5 тг):</label>
-                            <input type="checkbox" x-model="numeration">
+                    <div class="mt-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Заливка</label>
+                        <div class="flex items-center gap-4 text-sm">
+                            <label class="flex items-center space-x-1">
+                                <input type="radio" x-model="coverage" value="none" @change="calculate">
+                                <span>Обычная</span>
+                            </label>
+                            <label class="flex items-center space-x-1">
+                                <input type="radio" x-model="coverage" value="medium" @change="calculate">
+                                <span>Средняя</span>
+                            </label>
+                            <label class="flex items-center space-x-1">
+                                <input type="radio" x-model="coverage" value="full" @change="calculate">
+                                <span>Полная</span>
+                            </label>
                         </div>
                     </div>
-                    <div class="mt-2 text-sm">Доп. услуги: <span x-text="getExtrasPrice() + ' тг'"></span></div>
+
+{{--                    <button @click="showServices = !showServices" class="w-full bg-gray-100 px-4 py-2 rounded-md border text-left hover:bg-gray-200">--}}
+{{--                        Добавить услугу +--}}
+{{--                    </button>--}}
+{{--                    <div x-show="showServices" class="p-4 bg-white border rounded-md space-y-4 mt-2">--}}
+{{--                        <div class="flex justify-between items-center">--}}
+{{--                            <label>Биговка (1 биг = +5 тг):</label>--}}
+{{--                            <input type="number" min="0" class="w-24 border rounded px-2 py-1" x-model.number="bigovka">--}}
+{{--                        </div>--}}
+{{--                        <div class="flex justify-between items-center">--}}
+{{--                            <label>Перфорация (1 линия = +5 тг):</label>--}}
+{{--                            <input type="number" min="0" class="w-24 border rounded px-2 py-1" x-model.number="perforation">--}}
+{{--                        </div>--}}
+{{--                        <div class="flex justify-between items-center">--}}
+{{--                            <label>Скругление углов (+5 тг):</label>--}}
+{{--                            <input type="checkbox" x-model="roundCorners">--}}
+{{--                        </div>--}}
+{{--                        <div class="flex justify-between items-center">--}}
+{{--                            <label>Нумерация (+5 тг):</label>--}}
+{{--                            <input type="checkbox" x-model="numeration">--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                    <div class="mt-2 text-sm">Доп. услуги: <span x-text="getExtrasPrice() + ' тг'"></span></div>--}}
 
                     <!-- Тираж -->
                 <div class="flex items-center justify-center space-x-2">
@@ -467,14 +466,14 @@
             // Paper types
             // =========================
             paperTypes: {!! json_encode($paperType->map(function($pt) {
-        return [
-          'id' => $pt->id,
-          'name' => $pt->name,
-          'density' => $pt->density,
-          'price' => $pt->price,
-          'sheets' => $pt->sheets,
-        ];
-      })->values()) !!},
+                return [
+                  'id' => $pt->id,
+                  'name' => $pt->name,
+                  'density' => $pt->density,
+                  'price' => $pt->price,
+                  'sheets' => $pt->sheets,
+                ];
+            })->values()) !!},
 
             selectedName: '',
             filteredDensities: [],
@@ -495,7 +494,6 @@
 
             updatePaper() {
                 const selected = this.paperTypes.find(p => p.id == this.selectedType);
-
                 this.paperName = selected ? `${selected.name} ${selected.density} г/м²` : '';
 
                 const price = parseFloat(selected?.price) || 0;
@@ -511,7 +509,6 @@
             // Main calc
             // =========================
             calculate() {
-                const format = parseFloat(this.formatPrice) || 0;
                 const type   = parseFloat(this.typePrice) || 0;
                 const color  = 0;
 
@@ -525,6 +522,13 @@
                     const selected = document.querySelector('select[x-model="formatPrice"] option:checked');
                     width = parseInt(selected?.getAttribute('data-width')) || 0;
                     height = parseInt(selected?.getAttribute('data-height')) || 0;
+                }
+
+                // ЗАЩИТА от деления на 0
+                if (!width || !height) {
+                    this.totalPrice = 0;
+                    this.unitPrice = this.toFixedPrice(0);
+                    return;
                 }
 
                 const sheetW = 320, sheetH = 450;
@@ -545,26 +549,46 @@
                 if (altCount > count) count = altCount;
 
                 const fitPerSheet  = count > 0 ? count : 1;
-                const sheetPrice   = format + type + color;
+                const sheetPrice   = type + color;
                 const sheetsNeeded = Math.ceil(qty / fitPerSheet);
 
-                // обновляем базы/ставки один раз
+                const paperTotal  = sheetPrice * sheetsNeeded;
+                const extrasTotal = this.getExtrasPrice() * qty;
+
                 this.syncMachineRates();
 
-                const machinePricePerItem = this.getFinalMachinePricePerItem();
-                const machineTotal = machinePricePerItem * qty;
+                const machinePricePerItem  = this.getFinalMachinePricePerItem();
+                const machinePricePerSheet = machinePricePerItem * fitPerSheet;
+                const machineTotal         = machinePricePerSheet * sheetsNeeded;
 
-                const baseTotal =
-                    (sheetPrice * sheetsNeeded) +
-                    machineTotal +
-                    (this.getExtrasPrice() * qty);
+                const baseTotal = (sheetPrice * sheetsNeeded) + machineTotal + (this.getExtrasPrice() * qty);
 
                 const tirageMultiplier = this.getTirageMultiplier(qty);
-                const totalWithTirage = baseTotal * tirageMultiplier;
+                const totalWithTirage = this.roundUp(baseTotal * tirageMultiplier, 5);
 
                 const coverageMultiplier = this.CFG.COVERAGE_MULTIPLIERS[this.coverage] ?? 1;
                 const rawTotalPrice = Math.round(totalWithTirage * coverageMultiplier);
-                const rawUnitPrice  = rawTotalPrice / qty;
+                const rawUnitPrice  = this.roundUp(rawTotalPrice / qty, 5);
+
+                // DEBUG
+                console.log("====== DEBUG ======");
+                console.log("fitPerSheet:", fitPerSheet);
+                console.log("sheetsNeeded:", sheetsNeeded);
+                console.log("qty:", qty);
+
+                console.log("machinePricePerItem:", machinePricePerItem);
+                console.log("machinePricePerSheet:", machinePricePerSheet);
+                console.log("machineTotal:", machineTotal);
+
+                console.log("paperTotal:", paperTotal);
+                console.log("extrasTotal:", extrasTotal);
+
+                console.log("baseTotal:", baseTotal);
+                console.log("tirageMultiplier:", tirageMultiplier);
+                console.log("totalWithTirage:", totalWithTirage);
+                console.log("coverageMultiplier:", coverageMultiplier);
+                console.log("FINAL:", rawTotalPrice);
+                console.log("===========================");
 
                 this.totalPrice = rawTotalPrice;
                 this.unitPrice  = this.toFixedPrice(rawUnitPrice);
