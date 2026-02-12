@@ -565,7 +565,7 @@
                 this.syncMachineRates();
 
                 const machinePricePerItem  = this.getFinalMachinePricePerItem();
-                const machinePricePerSheet = machinePricePerItem * fitPerSheet;
+                const machinePricePerSheet = machinePricePerItem;
                 const machineTotal         = machinePricePerSheet * sheetsNeeded;
 
                 const baseTotal = (sheetPrice * sheetsNeeded) + machineTotal + (this.getExtrasPrice() * qty);
