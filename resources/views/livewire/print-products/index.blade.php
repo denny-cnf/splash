@@ -454,8 +454,15 @@
             getFinalColorPrice() {
                 const { colorSides } = this.getSidesByType();
                 if (colorSides === 0) return 0;
-                const total = this.colorRate * 2 * colorSides;
-                return this.roundUp(total, this.CFG.ROUND_COLOR_TO);
+
+                // переводим ставку в цену за 1 сторону
+                const perSideRaw = this.colorRate * 2;
+
+                // округляем цену за 1 сторону
+                const perSide = this.roundUp(perSideRaw, this.CFG.ROUND_COLOR_TO);
+
+                // умножаем на количество сторон
+                return perSide * colorSides;
             },
 
             getFinalMachinePricePerItem() {
